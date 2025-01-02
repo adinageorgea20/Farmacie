@@ -6,17 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 
+
 builder.Services.AddDbContext<FarmacieContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("FarmacieContext")
         ?? throw new InvalidOperationException("Connection string 'FarmacieContext' not found.")));
 
-builder.Services.AddDbContext<LibraryIdentityContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("FarmacieContext")
-        ?? throw new InvalidOperationException("Connection string 'FarmacieContext' not found.")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<LibraryIdentityContext>();
+    .AddEntityFrameworkStores<FarmacieContext>();
+
 
 var app = builder.Build();
 

@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 using Farmacie.Data;
 using Farmacie.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,34 +20,38 @@ namespace Farmacie.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IUserEmailStore<User> _emailStore;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IUserEmailStore<IdentityUser> _emailStore;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly FarmacieContext _context;
 
         public RegisterModel(
-            UserManager<User> userManager,
-            IUserStore<User> userStore,
-            SignInManager<User> signInManager,
+            UserManager<IdentityUser> userManager,
+            IUserStore<IdentityUser> userStore,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            FarmacieContext context)
         {
             _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
             _signInManager = signInManager;
-            _emailStore = GetEmailStore(userStore);
             _logger = logger;
             _emailSender = emailSender;
-
-            // Initialize non-nullable properties
-            Input = new InputModel();
-            ExternalLogins = new List<AuthenticationScheme>();
+            _context = context;
         }
+
+        [BindProperty]
+        public User User { get; set; }
 
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public string? ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
@@ -58,24 +62,24 @@ namespace Farmacie.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
+            [Display(Name = "Confirm Password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
 
-        public async Task OnGetAsync(string? returnUrl = null)
+        public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -84,20 +88,37 @@ namespace Farmacie.Areas.Identity.Pages.Account
             {
                 return Page();
             }
-            var user = CreateUser();
 
-    
-            await _emailStore.SetEmailAsync(user, Input.Email, default);
+            var identityUser = CreateIdentityUser();
 
-            var result = await _userManager.CreateAsync(user, Input.Password);
+            await _userStore.SetUserNameAsync(identityUser, Input.Email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(identityUser, Input.Email, CancellationToken.None);
 
+            var result = await _userManager.CreateAsync(identityUser, Input.Password);
             if (result.Succeeded)
             {
-                _logger.LogInformation("User created a new account with password.");
+                _logger.LogInformation("Identity user created successfully.");
 
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                User.Email = Input.Email;
+                
+
+                _context.User.Add(User);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error saving user to database: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, "An error occurred while saving the user. Please try again.");
+                    return Page();
+                }
+
+                var userId = await _userManager.GetUserIdAsync(identityUser);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
@@ -112,7 +133,7 @@ namespace Farmacie.Areas.Identity.Pages.Account
                     return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
                 }
 
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                await _signInManager.SignInAsync(identityUser, isPersistent: false);
                 return LocalRedirect(returnUrl);
             }
 
@@ -124,26 +145,25 @@ namespace Farmacie.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private User CreateUser()
+        private IdentityUser CreateIdentityUser()
         {
             try
             {
-                return Activator.CreateInstance<User>();
+                return Activator.CreateInstance<IdentityUser>();
             }
             catch
             {
-                throw new InvalidOperationException("Unable to create an instance of the user class. Ensure it has a parameterless constructor.");
+                throw new InvalidOperationException($"Cannot create an instance of '{nameof(IdentityUser)}'. Ensure it has a parameterless constructor.");
             }
         }
 
-        private static IUserEmailStore<User> GetEmailStore(IUserStore<User> userStore)
+        private IUserEmailStore<IdentityUser> GetEmailStore()
         {
-            if (!(userStore is IUserEmailStore<User> emailStore))
+            if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-
-            return emailStore;
+            return (IUserEmailStore<IdentityUser>)_userStore;
         }
     }
 }
