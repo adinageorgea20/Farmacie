@@ -19,12 +19,15 @@ namespace Farmacie.Pages.Products
             _context = context;
         }
 
-        public IList<Product> Product { get;set; } = default!;
+        public IList<Product> Product { get; set; } = new List<Product>();
+
 
         public async Task OnGetAsync()
         {
-            /*Product = await _context.Product
-                Include(p => p.Categories).ToListAsync();*/
+            Product = await _context.Product
+            .Include(p => p.Categories)
+            .ToListAsync();
+
         }
     }
 }

@@ -19,6 +19,10 @@ namespace Farmacie.Models
         [Range(0, int.MaxValue, ErrorMessage = "Stock cannot be negative.")]
         public int Stock { get; set; }
 
+        [StringLength(255, ErrorMessage = "Image path cannot exceed 255 characters.")]
+        public string? ImageUrl { get; set; }
+
+
         public ICollection<Category>? Categories { get; set; }
 
         public List<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

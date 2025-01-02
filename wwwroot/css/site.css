@@ -1,22 +1,136 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
+.navbar {
+    background-color: #709948 !important;
+}
+
+    .navbar .nav-link {
+        color: #273f35 !important;
+    }
+
+        .navbar .nav-link:hover {
+            color: #FFD700;
+        }
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+//shared index page
+
+.header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.header h1 {
+    font-size: 3em;
+    margin-bottom: 0.5em;
+}
+
+.header p {
+    font-size: 1.2em;
+}
+
+.about-us {
+    background-color: #f4f4f4;
+    padding: 40px 0;
+}
+
+    .about-us h2 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .about-us p {
+        font-size: 1.2em;
+        text-align: center;
+        width: 100%;
+        margin: 0;
+    }
+
+.images-gallery {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 0;
+    background-color: #fff;
+    flex-wrap: nowrap;
+}
+
+    .images-gallery .image-item {
+        text-align: center;
+        width: 32%;
+        margin: 3px;
+        display: inline-block;
+    }
+
+    .images-gallery img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+
+
+    .images-gallery p {
+        margin-top: 10px;
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+.cta {
+    background-color: #709948;
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+}
+
+    .cta h2 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+
+    .cta p {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .cta .btn {
+        background-color: #cdd42c;
+        border-color: black;
+        color: black;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+        .cta .btn:hover {
+            background-color: #cc7a0;
+        }

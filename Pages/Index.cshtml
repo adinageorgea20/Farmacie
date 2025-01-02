@@ -2,41 +2,50 @@
 @model Farmacie.Pages.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Welcome to Our Pharmacy";
 }
 
-<h1>Index</h1>
+<header class="header">
+    <h1>Your trusted partner for health and wellness</h1>
+   
+</header>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Category[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category[0].Products)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Category) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Products)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<section class="about-us">
+    <div class="container">
+        <h2>About Us</h2>
+        <p>
+            At HealthyCare Pharmacy, we believe in providing exceptional care to our customers. We are committed to offering the best pharmacy services, quality medications, and health products at affordable prices.
+            Our team of professional pharmacists and healthcare experts are always here to help you with all your health and wellness needs.
+            We aim to make a positive impact on our community, one prescription at a time.
+        </p>
+    </div>
+</section>
+
+<section class="images-gallery">
+    <div class="container">
+        <div class="image-item">
+            <img src="/images/pharmacy2.jpg" alt="Medication" class="img-fluid">
+            <p>Quality Medication for Your Health</p>
+        </div>
+        <div class="image-item">
+            <img src="/images/pharmacy1.jpg" alt="Pharmacy Interior" class="img-fluid">
+            <p>Inside Our Pharmacy</p>
+        </div>
+        <div class="image-item">
+            <img src="/images/pharmacy3.jpg" alt="Customer Service" class="img-fluid">
+            <p>Friendly Customer Service</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <h2>Visit Us Today</h2>
+        <p>
+            Come visit our pharmacy today for expert advice, premium health products, and prescriptions you can trust.
+            We’re here to support your health journey!
+        </p>
+        <a href="/Contact" class="btn btn-primary">Contact Us</a>
+    </div>
+</section>
+
