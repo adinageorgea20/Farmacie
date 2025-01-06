@@ -29,17 +29,21 @@
     {
         <div class="col-md-4 mb-4">
             <div class="card">
-                <img class="card-img-top" src="@product.ImageUrl" alt="Product image">
+                <!-- Imaginea produsului, cu imagine default daca nu există una -->
+                <img class="card-img-top"
+                     src="@(!string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "/images/product-placeholder.jpg")"
+                     alt="Product image">
                 <div class="card-body">
                     <h5 class="card-title">@product.Name</h5>
                     <p class="card-text">@product.Price</p>
                     <p class="card-text">Stock: @product.Stock</p>
                     <p class="card-text">
                         Categories:
-                        @foreach (var category in product.Categories)
+                        @foreach (var productCategory in product.ProductCategories)
                         {
-                            <span class="badge badge-info">@category.Name</span>
+                            <span class="badge badge-info">@productCategory.Category.Name</span>
                         }
+
                     </p>
                     <form method="post" asp-page-handler="AddToCart">
                         <input type="hidden" name="productId" value="@product.ID" />

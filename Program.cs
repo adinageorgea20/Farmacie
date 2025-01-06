@@ -1,9 +1,14 @@
-﻿using Farmacie.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Farmacie.Data;
 using Farmacie.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<FarmacieContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 
 // Adăugăm serviciile necesare
 builder.Services.AddRazorPages();
@@ -46,7 +51,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Activăm utilizarea sesiunii
 app.UseSession();
 
 app.MapRazorPages();

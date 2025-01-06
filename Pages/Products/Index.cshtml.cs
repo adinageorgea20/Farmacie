@@ -36,11 +36,11 @@ namespace Farmacie.Pages.Products
 
             if (!string.IsNullOrEmpty(selectedCategory))
             {
-                productsQuery = productsQuery.Where(p => p.Categories.Any(c => c.Name == selectedCategory));
+                productsQuery = productsQuery.Where(p => p.ProductCategories.Any(pc => pc.Category.Name == selectedCategory));
             }
 
             Products = await productsQuery
-                .Include(p => p.Categories)
+                .Include(p => p.ProductCategories)
                 .ToListAsync();
         }
 

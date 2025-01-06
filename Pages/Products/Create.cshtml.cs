@@ -6,6 +6,7 @@ using Farmacie.Models;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Farmacie.Pages.Products
 {
@@ -28,6 +29,9 @@ namespace Farmacie.Pages.Products
         // Lista de categorii pentru dropdown
         public SelectList CategorySelectList { get; set; }
 
+        [BindProperty]
+        public List<int> SelectedCategories { get; set; } = new List<int>();
+
         public IActionResult OnGet()
         {
             // Populăm lista de categorii pentru dropdown
@@ -39,7 +43,7 @@ namespace Farmacie.Pages.Products
         {
             if (!ModelState.IsValid)
             {
-                // Dacă modelul nu este valid, ne întoarcem la pagină pentru corectarea greșelilor
+                // Dacă modelul nu este valid, populăm din nou lista de categorii pentru dropdown
                 CategorySelectList = new SelectList(_context.Category, "ID", "Name");
                 return Page();
             }
@@ -47,7 +51,6 @@ namespace Farmacie.Pages.Products
             // Gestionarea încărcării imaginii
             if (ImageUpload != null)
             {
-                var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                 if (!Directory.Exists(_imageDirectory))
                 {
                     Directory.CreateDirectory(_imageDirectory);
@@ -72,6 +75,18 @@ namespace Farmacie.Pages.Products
 
             // Salvăm produsul în baza de date
             _context.Product.Add(Product);
+            await _context.SaveChangesAsync();
+
+            // Adăugăm categoriile selectate la produs
+            foreach (var categoryId in SelectedCategories)
+            {
+                var productCategory = new ProductCategory
+                {
+                    ProductID = Product.ID,
+                    CategoryID = categoryId
+                };
+                _context.ProductCategory.Add(productCategory);
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

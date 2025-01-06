@@ -28,10 +28,10 @@
 
     <div class="form-group">
         <label for="CategorySelectList">Categories</label>
-        <select asp-for="Product.Categories" asp-items="Model.CategorySelectList" class="form-control" multiple>
+        <select asp-for="SelectedCategories" asp-items="Model.CategorySelectList" class="form-control" multiple>
             <option value="">Select categories</option>
         </select>
-        <span asp-validation-for="Product.Categories" class="text-danger"></span>
+        <span asp-validation-for="SelectedCategories" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -41,6 +41,7 @@
 
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
+<form method="post"> <input type="hidden" asp-for="Product.ID" /> <button type="submit" class="btn btn-danger">Delete</button> <a asp-page="./Index" class="btn btn-secondary">Cancel</a> </form>
 
 <div>
     <a asp-page="Index">Back to List</a>

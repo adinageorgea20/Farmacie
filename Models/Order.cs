@@ -12,9 +12,7 @@ namespace Farmacie.Models
         [Required]
         public DateTime OrderDate { get; set; }
 
-        [Required]
-        public string UserID { get; set; }
-
         public List<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
     }
 }
