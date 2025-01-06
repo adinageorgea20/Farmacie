@@ -36,7 +36,7 @@ namespace Farmacie.Pages.Orders
                 return NotFound();
             }
             Order = order;
-           ViewData["UserID"] = new SelectList(_context.User, "ID", "Password");
+          
             return Page();
         }
 

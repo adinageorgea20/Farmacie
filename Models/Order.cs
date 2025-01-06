@@ -13,10 +13,7 @@ namespace Farmacie.Models
         public DateTime OrderDate { get; set; }
 
         [Required]
-        public int UserID { get; set; }
-
-        [ForeignKey("UserID")]
-        public User User { get; set; }
+        public string UserID { get; set; }
 
         public List<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }

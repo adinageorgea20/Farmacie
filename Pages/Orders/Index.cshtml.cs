@@ -24,7 +24,7 @@ namespace Farmacie.Pages.Orders
         public async Task OnGetAsync()
         {
             Order = await _context.Order
-                .Include(o => o.User).ToListAsync();
+               .ToListAsync();
         }
     }
 }

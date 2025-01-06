@@ -2,47 +2,51 @@
 @model Farmacie.Pages.Products.IndexModel
 
 @{
-    ViewData["Title"] = "Produsele noastre";
+    ViewData["Title"] = "Products";
 }
 
-<h1>Produsele noastre</h1>
+<h1>Products</h1>
 
-<p>
-    <a class="btn btn-primary" asp-page="Create">Create New</a>
-</p>
+<form method="get" class="form-inline mb-4">
+    <div class="form-group mr-2">
+        <label for="selectedCategory" class="mr-2">Filter by Category:</label>
+        <select id="selectedCategory" name="selectedCategory" asp-for="SelectedCategory" class="form-control">
+            <option value="">All Categories</option>
+            @foreach (var category in Model.CategoryList)
+            {
+                <option value="@category.Name"
+                        selected="@((category.Name == Model.SelectedCategory) ? "selected" : "")">
+                    @category.Name
+                </option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
 
 <div class="row">
-    @if (Model.Product != null && Model.Product.Any())
+    @foreach (var product in Model.Products)
     {
-        @foreach (var item in Model.Product)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <!-- Display product image if available, else show placeholder -->
-                    @if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                        <img src="~/images/@item.ImageUrl" class="card-img-top" alt="@item.Name" />
-                    }
-                    else
-                    {
-                        <img src="~/images/product-placeholder.jpg" class="card-img-top" alt="Product Image" />
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Name</h5>
-                        <p class="card-text">
-                            <strong>Price:</strong> @item.Price <br />
-                            <strong>Stock:</strong> @item.Stock
-                        </p>
-                        <a class="btn btn-primary" asp-page="./Details" asp-route-id="@item.ID">Details</a>
-                        <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.ID">Edit</a>
-                        <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-                    </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img class="card-img-top" src="@product.ImageUrl" alt="Product image">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Price</p>
+                    <p class="card-text">Stock: @product.Stock</p>
+                    <p class="card-text">
+                        Categories:
+                        @foreach (var category in product.Categories)
+                        {
+                            <span class="badge badge-info">@category.Name</span>
+                        }
+                    </p>
+                    <form method="post" asp-page-handler="AddToCart">
+                        <input type="hidden" name="productId" value="@product.ID" />
+                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </form>
                 </div>
             </div>
-        }
-    }
-    else
-    {
-        <p>No products available.</p>
+        </div>
     }
 </div>

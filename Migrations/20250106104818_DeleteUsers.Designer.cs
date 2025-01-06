@@ -4,6 +4,7 @@ using Farmacie.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Farmacie.Migrations
 {
     [DbContext(typeof(FarmacieContext))]
-    partial class FarmacieContextModelSnapshot : ModelSnapshot
+    [Migration("20250106104818_DeleteUsers")]
+    partial class DeleteUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,7 +156,7 @@ namespace Farmacie.Migrations
                         .IsRequired();
 
                     b.HasOne("Farmacie.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -164,6 +167,11 @@ namespace Farmacie.Migrations
                 });
 
             modelBuilder.Entity("Farmacie.Models.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Farmacie.Models.Product", b =>
                 {
                     b.Navigation("OrderDetails");
                 });

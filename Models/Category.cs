@@ -8,8 +8,8 @@ namespace Farmacie.Models
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
-        public List<string> Products { get; set; } = new List<string>();
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

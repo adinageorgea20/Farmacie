@@ -1,0 +1,46 @@
+﻿@page
+@model Farmacie.Pages.ContactModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container mt-5">
+    <h2>@ViewData["Title"]</h2>
+    <p>We are here to help you with all your healthcare needs. Please reach out to us using the contact information below, or fill out the form if you have any questions or concerns.</p>
+
+    <h3>Contact Information</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <strong>Phone:</strong> (555) 123-4567
+        </li>
+        <li class="list-group-item">
+            <strong>Email:</strong> contact@healthycarepharmacy.com
+        </li>
+        <li class="list-group-item">
+            <strong>Address:</strong> 123 Health St, Wellness City, HCP 12345
+        </li>
+        <li class="list-group-item">
+            <strong>Business Hours:</strong><br />
+            Monday - Friday: 9:00 AM - 6:00 PM<br />
+            Saturday: 10:00 AM - 4:00 PM<br />
+            Sunday: Closed
+        </li>
+    </ul>
+
+    <h3 class="mt-4">Send Us a Message</h3>
+    <form method="post">
+        <div class="form-group">
+            <label for="Name">Your Name:</label>
+            <input type="text" class="form-control" id="Name" name="Name" required />
+        </div>
+        <div class="form-group">
+            <label for="Email">Your Email:</label>
+            <input type="email" class="form-control" id="Email" name="Email" required />
+        </div>
+        <div class="form-group">
+            <label for="Message">Your Message:</label>
+            <textarea class="form-control" id="Message" name="Message" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Send Message</button>
+    </form>
+</div>

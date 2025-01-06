@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Farmacie.Data;
 using Farmacie.Models;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Farmacie.Pages.Products
@@ -19,25 +19,32 @@ namespace Farmacie.Pages.Products
             _context = context;
         }
 
-        public IActionResult OnGet()
-        {
-            ViewData["CategoryID"] = new SelectList(_context.Category, "ID", "Name");
-            return Page();
-        }
-
         [BindProperty]
         public Product Product { get; set; } = default!;
 
         [BindProperty]
         public IFormFile? ImageUpload { get; set; }
 
+        // Lista de categorii pentru dropdown
+        public SelectList CategorySelectList { get; set; }
+
+        public IActionResult OnGet()
+        {
+            // Populăm lista de categorii pentru dropdown
+            CategorySelectList = new SelectList(_context.Category, "ID", "Name");
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                // Dacă modelul nu este valid, ne întoarcem la pagină pentru corectarea greșelilor
+                CategorySelectList = new SelectList(_context.Category, "ID", "Name");
                 return Page();
             }
 
+            // Gestionarea încărcării imaginii
             if (ImageUpload != null)
             {
                 var imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
@@ -49,14 +56,21 @@ namespace Farmacie.Pages.Products
                 var fileName = Path.GetRandomFileName() + Path.GetExtension(ImageUpload.FileName);
                 var filePath = Path.Combine(_imageDirectory, fileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    await ImageUpload.CopyToAsync(stream);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageUpload.CopyToAsync(stream);
+                    }
+                    Product.ImageUrl = "/images/" + fileName;
                 }
-
-                Product.ImageUrl = "/images/" + fileName;
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Eroare la salvarea imaginii: {ex.Message}");
+                }
             }
 
+            // Salvăm produsul în baza de date
             _context.Product.Add(Product);
             await _context.SaveChangesAsync();
 

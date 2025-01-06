@@ -21,7 +21,7 @@ namespace Farmacie.Pages.Orders
 
         public IActionResult OnGet()
         {
-        ViewData["UserID"] = new SelectList(_context.User, "ID");
+        
             return Page();
         }
 
