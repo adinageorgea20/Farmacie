@@ -17,6 +17,7 @@
                 @Html.DisplayNameFor(model => model.Order[0].OrderDate)
             </th>
             
+            
             <th></th>
         </tr>
     </thead>
@@ -26,6 +27,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.OrderDate)
             </td>
+                
            
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |

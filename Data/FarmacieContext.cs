@@ -32,7 +32,12 @@ namespace Farmacie.Data
                 .HasOne(pc => pc.Category)
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryID);
+
+            
         }
+        public DbSet<Farmacie.Models.Customer> Customer { get; set; } = default!;
 
     }
+
 }
+

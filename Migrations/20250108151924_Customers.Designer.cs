@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Farmacie.Migrations
 {
     [DbContext(typeof(FarmacieContext))]
-    [Migration("20250102163720_Users3")]
-    partial class Users3
+    [Migration("20250108151924_Customers")]
+    partial class Customers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,16 +38,7 @@ namespace Farmacie.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
-                    b.PrimitiveCollection<string>("Products")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("ProductID");
 
                     b.ToTable("Category");
                 });
@@ -63,12 +54,7 @@ namespace Farmacie.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("Order");
                 });
@@ -127,46 +113,19 @@ namespace Farmacie.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Farmacie.Models.User", b =>
+            modelBuilder.Entity("Farmacie.Models.ProductCategory", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("ProductID", "CategoryID");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasIndex("CategoryID");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("Farmacie.Models.Category", b =>
-                {
-                    b.HasOne("Farmacie.Models.Product", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("ProductID");
-                });
-
-            modelBuilder.Entity("Farmacie.Models.Order", b =>
-                {
-                    b.HasOne("Farmacie.Models.User", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("ProductCategory");
                 });
 
             modelBuilder.Entity("Farmacie.Models.OrderDetail", b =>
@@ -178,7 +137,7 @@ namespace Farmacie.Migrations
                         .IsRequired();
 
                     b.HasOne("Farmacie.Models.Product", "Product")
-                        .WithMany("OrderDetails")
+                        .WithMany()
                         .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -188,6 +147,30 @@ namespace Farmacie.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Farmacie.Models.ProductCategory", b =>
+                {
+                    b.HasOne("Farmacie.Models.Category", "Category")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Farmacie.Models.Product", "Product")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Farmacie.Models.Category", b =>
+                {
+                    b.Navigation("ProductCategories");
+                });
+
             modelBuilder.Entity("Farmacie.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
@@ -195,14 +178,7 @@ namespace Farmacie.Migrations
 
             modelBuilder.Entity("Farmacie.Models.Product", b =>
                 {
-                    b.Navigation("Categories");
-
-                    b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("Farmacie.Models.User", b =>
-                {
-                    b.Navigation("Orders");
+                    b.Navigation("ProductCategories");
                 });
 #pragma warning restore 612, 618
         }

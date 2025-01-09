@@ -40,6 +40,35 @@ namespace Farmacie.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("Farmacie.Models.Customer", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Customer");
+                });
+
             modelBuilder.Entity("Farmacie.Models.Order", b =>
                 {
                     b.Property<int>("ID")
@@ -48,10 +77,15 @@ namespace Farmacie.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int?>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("CustomerID");
 
                     b.ToTable("Order");
                 });
@@ -123,6 +157,15 @@ namespace Farmacie.Migrations
                     b.HasIndex("CategoryID");
 
                     b.ToTable("ProductCategory");
+                });
+
+            modelBuilder.Entity("Farmacie.Models.Order", b =>
+                {
+                    b.HasOne("Farmacie.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Farmacie.Models.OrderDetail", b =>

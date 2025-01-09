@@ -1,45 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Farmacie.Data;
 using Farmacie.Services;
-
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FarmacieContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("FarmacieContext")));
 
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<PharmacyIdentityContext>();
 
-
-// Adăugăm serviciile necesare
 builder.Services.AddRazorPages();
 
-// Adăugăm serviciul DbContext pentru conectarea la baza de date
-builder.Services.AddDbContext<FarmacieContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("FarmacieContext")
-        ?? throw new InvalidOperationException("Connection string 'FarmacieContext' not found.")));
-
-// Permitem utilizarea sesiunii în aplicație
-builder.Services.AddDistributedMemoryCache(); // Permite stocarea în memorie
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Setează timpul de expirare al sesiunii
-    options.Cookie.HttpOnly = true; // Asigură securitatea cookie-ului
-    options.Cookie.IsEssential = true; // Setează ca esențial pentru aplicație
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
-// Adăugăm acces la contextul HTTP pentru sesiune
-builder.Services.AddHttpContextAccessor(); // Permite accesul la sesiune
+builder.Services.AddDbContext<PharmacyIdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("PharmacyIdentityContextConnection")
+    ?? throw new InvalidOperationException("Connection string 'PharmacyIdentityContextConnection' not found.")));
 
-// Înregistrăm serviciul ShoppingCart
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<ShoppingCartService>();
 
-builder.Services.AddScoped<ShoppingCartService>();
-
-
-// Construim aplicația
 var app = builder.Build();
 
-// Configurăm aplicația pentru a rula
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -52,6 +43,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 
